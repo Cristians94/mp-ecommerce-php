@@ -1,3 +1,59 @@
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<?php
+// SDK de Mercado Pago
+require __DIR__ .  '/vendor/autoload.php';
+// Agrega credenciales
+MercadoPago\SDK::setAccessToken('APP_USR-2572771298846850-120119-a50dbddca35ac9b7e15118d47b111b5a-681067803');
+
+// Crea un objeto de preferencia
+$preference = new MercadoPago\Preference();
+$preference->external_reference = "cristians_94@hotmail.com";
+
+// Crea un ítem en la preferencia
+$item = new MercadoPago\Item();
+$item->id = 1234;
+$item->title = $_POST['title'];
+$item->description = 'Dispositivo móvil de Tienda e-commerce';
+$item->picture_url = $_POST['img'];
+$item->quantity = 1;
+$item->unit_price = $_POST['price'];
+
+
+$preference->items = array($item);
+
+$preference->payment_methods = array(
+    "excluded_payment_methods" => array(
+      array("id" => "amex")
+    ),
+    "excluded_payment_types" => array(
+      array("id" => "atm")
+    ),
+    "installments" => 6
+  );
+
+$payer = new MercadoPago\Payer();
+    $payer->name = "Lalo";
+    $payer->surname = "Landa";
+    $payer->email = "test_user_83958037@testuser.com";
+    $payer->phone = array(
+    "area_code" => "52",
+    "number" => "5549737300"
+    );
+
+    $payer->address = array(
+    "street_name" => "Insurgentes Sur",
+    "street_number" => 1602,
+    "zip_code" => "03940"
+    );
+
+$preference->payer = $payer;
+$preference->save();
+
+$response = array(
+    'id' => $preference->id,
+); 
+//echo json_encode($response);
+?>
 <!DOCTYPE html>
 <html class="supports-animation supports-columns svg no-touch no-ie no-oldie no-ios supports-backdrop-filter as-mouseuser" lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
@@ -128,6 +184,9 @@
                                         </h3>
                                         <h3 >
                                             <?php echo "$" . $_POST['unit'] ?>
+                                        </h3>
+                                        <h3 >
+                                            <?php echo $preference->id; ?>
                                         </h3>
                                     </div>
                                     <button type="submit" class="mercadopago-button" formmethod="post">Pagar</button>
